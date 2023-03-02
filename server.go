@@ -24,7 +24,7 @@ func main() {
 		MinVersion:   tls.VersionTLS10,
 	}
 
-	addr := "193.233.202.119:443"
+	addr := "0.0.0.0:443"//"193.233.202.119:443"
 	// Create the HTTP server with the TLS config
 	server := &http.Server{
 		Addr:      addr,
