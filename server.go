@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
 )
 
 func main() {
@@ -24,7 +27,7 @@ func main() {
 		MinVersion:   tls.VersionTLS10,
 	}
 
-	addr := "0.0.0.0:443"//"193.233.202.119:443"
+	addr := /* "193.233.202.119:443" */ "0.0.0.0:443"
 	// Create the HTTP server with the TLS config
 	server := &http.Server{
 		Addr:      addr,
@@ -58,11 +61,58 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	requestText := string(body)
+	ytURL := string(body)
 
-	// Print the request text to the server console
-	fmt.Printf("Received request: %s\n", requestText)
+	// Print the requested YouTube URL to the server console
+	fmt.Printf("Received request: %s\n", ytURL)
+
+	videoID := extractVideoID(ytURL)
+
+	downloadSongToPath(ytURL, videoID)
 
 	// Return a response
-	fmt.Fprintf(w, "Hello World!\n")
+	// Load the mp3 file from disk
+	fileBytes, err := ioutil.ReadFile("songsMP3/" + videoID + ".mp3")
+	if err != nil {
+		http.Error(w, "Error reading mp3 file.", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the content type header to indicate that we're returning binary data
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	// Set the content disposition header to suggest a filename
+	w.Header().Set("Content-Disposition", "attachment; filename="+videoID+".mp3")
+
+	// Write the mp3 file bytes to the response writer
+	w.Write(fileBytes)
+}
+
+func downloadSongToPath(ytURL string, videoID string) {
+	// Create the songsMP3 directory if it doesn't already exist
+	err := os.Mkdir("songsMP3", 0755)
+	if err != nil && !os.IsExist(err) {
+		fmt.Println("Error creating songs directory.")
+		return
+	}
+
+	// Download the mp3 file using yt-dlp
+	cmd := exec.Command("yt-dlp", "--extract-audio", "--audio-format", "mp3", "-o", "songsMP3/"+videoID+".%(ext)s", ytURL)
+	// Run the command and wait for it to finish
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("Error downloading mp3 file.")
+		return
+	}
+	fmt.Printf("File downloaded successfully at songsMP3/%s!\n", videoID)
+}
+
+func extractVideoID(ytURL string) string {
+	u, err := url.Parse(ytURL)
+	if err != nil {
+		return ""
+	}
+
+	query := u.Query()
+	return query.Get("v")
 }
