@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"bytes"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 		MinVersion:   tls.VersionTLS10,
 	}
 
-	addr := /* "193.233.202.119:443" */ "0.0.0.0:443"
+	addr :=  /*"193.233.202.119:443" */ "0.0.0.0:443"
 	// Create the HTTP server with the TLS config
 	server := &http.Server {
 		Addr:      addr,
@@ -98,10 +99,17 @@ func downloadSongToPath(ytURL string, videoID string) {
 
 	// Download the mp3 file using yt-dlp
 	cmd := exec.Command("yt-dlp", "--extract-audio", "--audio-format", "mp3", "-o", "songsMP3/"+videoID+".%(ext)s", ytURL)
+
+	var stdout, stderr bytes.Buffer
+        cmd.Stdout = &stdout
+        cmd.Stderr = &stderr
+
 	// Run the command and wait for it to finish
 	err = cmd.Run()
 	if err != nil {
 		log.Printf("Error downloading mp3 file: %s", err)
+		log.Printf("yt-dlp command output: %s", stdout.String())
+    		log.Printf("yt-dlp command error message: %s", stderr.String())
 		return
 	}
 	log.Printf("File downloaded successfully at songsMP3/%s\n", videoID)

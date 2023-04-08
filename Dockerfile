@@ -17,6 +17,10 @@ ENV GO111MODULE=on
 
 RUN go build -o server .
 
+# Clean up unnecessary files
+RUN rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/*
+
 EXPOSE 443
 
 CMD ["/app/server"]
