@@ -29,7 +29,7 @@ func main() {
 
 	addr := /* "193.233.202.119:443" */ "0.0.0.0:443"
 	// Create the HTTP server with the TLS config
-	server := &http.Server{
+	server := &http.Server {
 		Addr:      addr,
 		Handler:   mux,
 		TLSConfig: config,
@@ -101,10 +101,10 @@ func downloadSongToPath(ytURL string, videoID string) {
 	// Run the command and wait for it to finish
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("Error downloading mp3 file.")
+		log.Printf("Error downloading mp3 file: %s", err)
 		return
 	}
-	fmt.Printf("File downloaded successfully at songsMP3/%s!\n", videoID)
+	log.Printf("File downloaded successfully at songsMP3/%s\n", videoID)
 }
 
 func extractVideoID(ytURL string) string {
