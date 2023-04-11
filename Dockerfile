@@ -5,6 +5,9 @@ RUN apk add --no-cache curl ffmpeg python3 && \
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp
 
+# Install wireguard
+RUN apk add -U wireguard-tools
+
 # Set up working directory and copy application files
 WORKDIR /app
 COPY . .
