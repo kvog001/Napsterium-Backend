@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
+	"crypto/tls"
 )
 
 func main() {
@@ -35,6 +35,6 @@ func main() {
 	log.Printf("Listening on %s...\n", addr)
 	err = server.ListenAndServeTLS("", "")
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		log.Println("Error starting server:", err)
 	}
 }
