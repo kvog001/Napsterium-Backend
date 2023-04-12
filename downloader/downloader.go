@@ -1,4 +1,4 @@
-package handler
+package downloader
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 
 // e.g. youtubeURL := "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
-func downloadSongToPath(youtubeURL string, videoID string) {
+func DownloadSongToDisk(youtubeURL string, videoID string) {
 	// Create the songsOpus directory if it doesn't already exist
 	err := os.Mkdir("songsOpus", 0755)
 	if err != nil && !os.IsExist(err) {

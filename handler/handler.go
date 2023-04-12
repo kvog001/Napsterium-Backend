@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"net/http"
 	"io/ioutil"
+	"Napsterium-Backend/downloader"
 	"github.com/hraban/opus"
 )
 
@@ -34,7 +35,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 
 	videoID := extractVideoID(youtubeURL)
 
-	downloadSongToPath(youtubeURL, videoID)
+	downloader.DownloadSongToDisk(youtubeURL, videoID)
 
 	// Return a response
 	log.Println("Preparing response")
