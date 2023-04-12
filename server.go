@@ -5,11 +5,12 @@ import (
 	"log"
 	"net/http"
 	"crypto/tls"
+	"Napsterium-Backend/handler"
 )
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/helloworld", helloHandler)
+	mux.HandleFunc("/helloworld", handler.HelloHandler)
 
 	fmt.Printf("Starting server at port 443\n")
 
@@ -23,7 +24,7 @@ func main() {
 		MinVersion:   tls.VersionTLS10,
 	}
 
-	addr :=  /*"193.233.202.119:443" */ "0.0.0.0:443"
+	addr :=  "193.233.202.119:443" /* "0.0.0.0:443" */
 	// Create the HTTP server with the TLS config
 	server := &http.Server {
 		Addr:      addr,

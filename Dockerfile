@@ -2,6 +2,8 @@ FROM golang:alpine
 
 #RUN apk add --no-cache ffmpeg lame youtube-dl
 RUN apk add --no-cache curl ffmpeg python3 && \
+    #curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl && \
+    #chmod a+rx /usr/local/bin/youtube-dl
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp
 

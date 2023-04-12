@@ -1,13 +1,14 @@
-package main
+package handler
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"net/http"
 	"io/ioutil"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
+func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/helloworld" {
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
@@ -35,6 +36,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	downloadSongToPath(youtubeURL, videoID)
 
 	// Return a response
+	log.Println("Preparing response")
 	// Load the mp3 file from disk
 	fileBytes, err := ioutil.ReadFile("songsMP3/" + videoID + ".mp3")
 	if err != nil {
@@ -50,6 +52,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Write the mp3 file bytes to the response writer
 	w.Write(fileBytes)
+	log.Println("Returning response")
 }
 
 func extractVideoID(youtubeURL string) string {

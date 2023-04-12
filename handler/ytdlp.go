@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"os"
@@ -23,8 +23,7 @@ func downloadSongToPath(youtubeURL string, videoID string) {
 	"yt-dlp", 
 	"--extract-audio", 
 	"--audio-format", "mp3", 
-	"--audio-quality", "0", 
-	"--no-playlist", 
+	"--audio-quality", "5", 
 	"-o", "songsMP3/" + videoID + ".%(ext)s", youtubeURL)
 
 	var stdout, stderr bytes.Buffer
