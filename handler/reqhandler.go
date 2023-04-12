@@ -46,7 +46,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// decode .opus to pcm
-	const channels = 2
+	const channels = 1
 	const sampleRate = 48000
 
 	dec, err := opus.NewDecoder(sampleRate, channels)
@@ -54,7 +54,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Failed to create Opus decoder:", err)
 			return
 	}
-	var frameSizeMs = float32(20)  // if you don't know, go with 60 ms.
+	var frameSizeMs = float32(60)  // if you don't know, go with 60 ms.
 	frameSize := channels * frameSizeMs * sampleRate / 1000
 	pcm := make([]int16, int(frameSize))
 	n, err := dec.Decode(fileBytes, pcm)
