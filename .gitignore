@@ -5,8 +5,9 @@
 *.so
 *.dylib
 
-# MP3 files
+# audio files
 *.mp3
+*.opus
 
 # Test binary, built with `go test -c`
 *.test

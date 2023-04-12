@@ -37,10 +37,10 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Return a response
 	log.Println("Preparing response")
-	// Load the mp3 file from disk
-	fileBytes, err := ioutil.ReadFile("songsMP3/" + videoID + ".mp3")
+	// Load the opus file from disk
+	fileBytes, err := ioutil.ReadFile("songsOpus/" + videoID + ".opus")
 	if err != nil {
-		http.Error(w, "Error reading mp3 file.", http.StatusInternalServerError)
+		http.Error(w, "Error reading opus file.", http.StatusInternalServerError)
 		return
 	}
 
@@ -48,7 +48,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 
 	// Set the content disposition header to suggest a filename
-	w.Header().Set("Content-Disposition", "attachment; filename=" + videoID + ".mp3")
+	w.Header().Set("Content-Disposition", "attachment; filename=" + videoID + ".opus")
 
 	// Write the mp3 file bytes to the response writer
 	w.Write(fileBytes)
