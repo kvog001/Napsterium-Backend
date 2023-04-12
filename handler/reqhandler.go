@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"net/http"
 	"io/ioutil"
+	"github.com/hraban/opus"
 )
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,26 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// decode .opus to pcm
+	const channels = 2
+	const sampleRate = 48000
+
+	dec, err := opus.NewDecoder(sampleRate, channels)
+	if err != nil {
+			fmt.Println("Failed to create Opus decoder:", err)
+			return
+	}
+	var frameSizeMs = float32(20)  // if you don't know, go with 60 ms.
+	frameSize := channels * frameSizeMs * sampleRate / 1000
+	pcm := make([]int16, int(frameSize))
+	n, err := dec.Decode(fileBytes, pcm)
+	if err != nil {
+			fmt.Println("Failed to decode Opus file:", err)
+			return
+	}
+
+	pcm = pcm[:n * channels]
+
 	// Set the content type header to indicate that we're returning binary data
 	w.Header().Set("Content-Type", "application/octet-stream")
 
@@ -51,7 +72,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", "attachment; filename=" + videoID + ".opus")
 
 	// Write the mp3 file bytes to the response writer
-	w.Write(fileBytes)
+	w.Write(int16ToBytes(pcm))
 	log.Println("Returning response")
 }
 
@@ -63,4 +84,14 @@ func extractVideoID(youtubeURL string) string {
 
 	query := u.Query()
 	return query.Get("v")
+}
+
+// Utility function to convert []int16 to []byte
+func int16ToBytes(data []int16) []byte {
+	bytes := make([]byte, len(data)*2)
+	for i, d := range data {
+		bytes[i*2] = byte(d)
+		bytes[i*2+1] = byte(d >> 8)
+	}
+	return bytes
 }
