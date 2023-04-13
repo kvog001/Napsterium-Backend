@@ -3,11 +3,10 @@ package handler
 import (
 	"fmt"
 	"log"
-	"net/url"
 	"net/http"
 	"io/ioutil"
-	"Napsterium-Backend/downloader"
 	"github.com/hraban/opus"
+	"Napsterium-Backend/downloader"
 )
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,61 +29,53 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	youtubeURL := string(body)
 
-	// Print the requested YouTube URL to the server console
 	fmt.Printf("Received request: %s\n", youtubeURL)
 
-	videoID := extractVideoID(youtubeURL)
+	downloader.DownloadSongToDisk(youtubeURL, "mp3", "9")
+	songID := downloader.ExtractSongID(youtubeURL)
+	sendResponse(w, songID)
+}
 
-	downloader.DownloadSongToDisk(youtubeURL, videoID)
-
-	// Return a response
-	log.Println("Preparing response")
-	// Load the opus file from disk
-	fileBytes, err := ioutil.ReadFile("songsOpus/" + videoID + ".opus")
+func sendResponse(w http.ResponseWriter, songID string) {
+	log.Println("--- preparing Response ---")
+	// Load the song file from disk
+	data, err := ioutil.ReadFile(downloader.SongsPath + "/" + songID + ".mp3")
 	if err != nil {
-		http.Error(w, "Error reading opus file.", http.StatusInternalServerError)
+		http.Error(w, "Error reading/loading song file from disk.", http.StatusInternalServerError)
 		return
 	}
 
-	// decode .opus to pcm
+	// Set the content type header to indicate that we're returning binary data
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	// Set the content disposition header to suggest a filename
+	w.Header().Set("Content-Disposition", "attachment; filename=" + songID + ".mp3")
+
+	// Write the mp3 file bytes to the response writer
+	w.Write(data)
+	log.Println("--- sending Response ---")
+}
+
+func decodeOpusToPcm(data []byte) []byte {
 	const channels = 1
 	const sampleRate = 48000
 
 	dec, err := opus.NewDecoder(sampleRate, channels)
 	if err != nil {
 			fmt.Println("Failed to create Opus decoder:", err)
-			return
+			return []byte{}
 	}
 	var frameSizeMs = float32(60)  // if you don't know, go with 60 ms.
 	frameSize := channels * frameSizeMs * sampleRate / 1000
 	pcm := make([]int16, int(frameSize))
-	n, err := dec.Decode(fileBytes, pcm)
+	n, err := dec.Decode(data, pcm)
 	if err != nil {
 			fmt.Println("Failed to decode Opus file:", err)
-			return
+			return []byte{}
 	}
 
 	pcm = pcm[:n * channels]
-
-	// Set the content type header to indicate that we're returning binary data
-	w.Header().Set("Content-Type", "application/octet-stream")
-
-	// Set the content disposition header to suggest a filename
-	w.Header().Set("Content-Disposition", "attachment; filename=" + videoID + ".opus")
-
-	// Write the mp3 file bytes to the response writer
-	w.Write(int16ToBytes(pcm))
-	log.Println("Returning response")
-}
-
-func extractVideoID(youtubeURL string) string {
-	u, err := url.Parse(youtubeURL)
-	if err != nil {
-		return ""
-	}
-
-	query := u.Query()
-	return query.Get("v")
+	return int16ToBytes(pcm)
 }
 
 // Utility function to convert []int16 to []byte
