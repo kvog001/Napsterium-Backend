@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"io/ioutil"
@@ -29,7 +28,7 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	youtubeURL := string(body)
 
-	fmt.Printf("Received request: %s\n", youtubeURL)
+	log.Printf("Received request: %s\n", youtubeURL)
 
 	downloader.DownloadSongToDisk(youtubeURL, "mp3", "9")
 	songID := downloader.ExtractSongID(youtubeURL)
@@ -62,16 +61,16 @@ func decodeOpusToPcm(data []byte) []byte {
 
 	dec, err := opus.NewDecoder(sampleRate, channels)
 	if err != nil {
-			fmt.Println("Failed to create Opus decoder:", err)
-			return []byte{}
+		log.Println("Failed to create Opus decoder:", err)
+		return []byte{}
 	}
 	var frameSizeMs = float32(60)  // if you don't know, go with 60 ms.
 	frameSize := channels * frameSizeMs * sampleRate / 1000
 	pcm := make([]int16, int(frameSize))
 	n, err := dec.Decode(data, pcm)
 	if err != nil {
-			fmt.Println("Failed to decode Opus file:", err)
-			return []byte{}
+		log.Println("Failed to decode Opus file:", err)
+		return []byte{}
 	}
 
 	pcm = pcm[:n * channels]

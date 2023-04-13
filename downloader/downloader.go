@@ -12,7 +12,7 @@ import (
 const SongsPath = "songs"
 
 func DownloadSongToDisk(youtubeURL, audioFormat, audioQuality string) {
-	// Create the songsOpus directory if it doesn't already exist
+	// Create the songs directory if it doesn't already exist
 	err := os.Mkdir(SongsPath, 0755)
 	if err != nil && !os.IsExist(err) {
 		fmt.Println("Error creating songs directory.")
@@ -34,8 +34,8 @@ func executeYTDLP(songID, youtubeURL, audioFormat, audioQuality string) {
 		"-o", SongsPath + "/" + songID + ".%(ext)s", youtubeURL)
 	
 	var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 
 	// Run the command and wait for it to finish
 	err := cmd.Run()
