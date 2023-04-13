@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"crypto/tls"
 	"Napsterium-Backend/handler"
+	"Napsterium-Backend/dbservice"
 )
 
 func main() {
+	dbservice.ConnectToDB()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/helloworld", handler.HelloHandler)
 
@@ -38,4 +41,5 @@ func main() {
 	if err != nil {
 		log.Println("Error starting server:", err)
 	}
+
 }
