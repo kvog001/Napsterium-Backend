@@ -6,11 +6,13 @@ replace Napsterium-Backend/handler => ./handler
 
 require (
 	Napsterium-Backend/dbservice v0.0.0-00010101000000-000000000000
+	Napsterium-Backend/dlservice v0.0.0-00010101000000-000000000000
 	Napsterium-Backend/handler v0.0.0-00010101000000-000000000000
 )
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hraban/opus v0.0.0-20220302220929-eeacdbcb92d0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
@@ -27,3 +29,5 @@ require (
 )
 
 replace Napsterium-Backend/dbservice => ./dbservice
+
+replace Napsterium-Backend/dlservice => ./dlservice
