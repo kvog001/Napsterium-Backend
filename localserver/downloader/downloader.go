@@ -60,7 +60,7 @@ func ExtractSongID(youtubeURL string) string {
 
 func logFileSize(songID string) {
 	// Get the file info for the downloaded file
-	filePath := SongsPath + "/" + songID + ".opus"
+	filePath := SongsPath + "/" + songID + ".mp3"
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Printf("Error getting file info: %s", err)

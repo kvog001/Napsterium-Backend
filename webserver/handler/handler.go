@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/hraban/opus"
-	"Napsterium-Backend/downloader"
 )
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,15 +29,16 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Received request: %s\n", youtubeURL)
 
-	downloader.DownloadSongToDisk(youtubeURL, "mp3", "9")
-	songID := downloader.ExtractSongID(youtubeURL)
+	songID := ""
+	//downloader.DownloadSongToDisk(youtubeURL, "mp3", "9")
+	//songID := downloader.ExtractSongID(youtubeURL)
 	sendResponse(w, songID)
 }
 
 func sendResponse(w http.ResponseWriter, songID string) {
 	log.Println("--- preparing Response ---")
 	// Load the song file from disk
-	data, err := ioutil.ReadFile(downloader.SongsPath + "/" + songID + ".mp3")
+	data, err := ioutil.ReadFile("songs/" + songID + ".mp3")
 	if err != nil {
 		http.Error(w, "Error reading/loading song file from disk.", http.StatusInternalServerError)
 		return

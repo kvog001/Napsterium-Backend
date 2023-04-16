@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	Napsterium-Backend/downloader v0.0.0-00010101000000-000000000000 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/hraban/opus v0.0.0-20220302220929-eeacdbcb92d0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
@@ -26,7 +25,5 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
-
-replace Napsterium-Backend/downloader => ./downloader
 
 replace Napsterium-Backend/dbservice => ./dbservice
