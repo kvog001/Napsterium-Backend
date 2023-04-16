@@ -18,7 +18,7 @@ func main() {
 	}
 
 	// Create the WebSocket connection to your Golang web server
-	conn, _, err := dialer.Dial("ws://kvogli.xyz/ws", nil) // Update with your Golang web server URL
+	conn, _, err := dialer.Dial("ws://kvogli.xyz:8080/ws", nil) // Update with your Golang web server URL
 	if err != nil {
 		log.Fatal("Failed to connect to web server:", err)
 	}
