@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"fmt"
 	"io/ioutil"
   "github.com/gorilla/websocket"
 	"Napsterium-Backend/downloader"
@@ -24,17 +23,20 @@ func main() {
 		}
 
 		youtubeURL := string(request)
-		fmt.Println("Received request from server:", youtubeURL)
+		log.Println("Received request from server:", youtubeURL)
 		
 		songID := downloader.ExtractSongID(youtubeURL)
 		downloader.DownloadSongToDisk(youtubeURL)
 
-		data, err := ioutil.ReadFile(downloader.SongsPath + "/" + songID + "." + downloader.DownloadFormat)
+		songPath := downloader.SongsPath + "/" + songID + "." + downloader.DownloadFormat
+		log.Printf("reading song data from disk %s ...\n", songPath)
+		data, err := ioutil.ReadFile(songPath)
 		if err != nil {
 			log.Println("Error reading/loading song file from disk.")
 			return
 		}
 
+		log.Println("sending response to server ...")
 		// Send response to server
 		err = conn.WriteMessage(websocket.TextMessage, []byte(data))
 		if err != nil {

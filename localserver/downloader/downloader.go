@@ -22,7 +22,7 @@ func DownloadSongToDisk(youtubeURL string) {
 
 	songID := ExtractSongID(youtubeURL)
 	executeYTDLP(songID, youtubeURL)
-	logFileSize(songID)
+	//logFileSize(songID)
 }
 
 func executeYTDLP(songID, youtubeURL string) {
@@ -46,7 +46,7 @@ func executeYTDLP(songID, youtubeURL string) {
 		log.Printf("yt-dlp command error message: %s", stderr.String())
 		return
 	}
-	log.Printf("File downloaded successfully at %s/%s\n", SongsPath, songID)
+	log.Printf("File downloaded successfully at %s/%s.%s\n", SongsPath, songID, DownloadFormat)
 }
 
 func ExtractSongID(youtubeURL string) string {
