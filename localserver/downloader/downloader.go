@@ -10,7 +10,7 @@ import (
 )
 
 const SongsPath = "songs"
-const DownloadFormat = "webm"
+const DownloadFormat = "mp3"
 
 func DownloadSongToDisk(youtubeURL string) {
 	// Create the songs directory if it doesn't already exist

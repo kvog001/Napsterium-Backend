@@ -44,9 +44,9 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func DownloadSong(youtubeURL string) []byte {
 	urlChannel <- youtubeURL
-	songWebm := <-songChannel
-	songMP3 := convert_webm_to_mp3(songWebm)
-	return songMP3
+	song := <-songChannel
+	//songMP3 := convert_webm_to_mp3(songWebm)
+	return song
 }
 
 func handleOutgoingMessages() {

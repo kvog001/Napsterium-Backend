@@ -8,6 +8,7 @@
 # audio files
 *.mp3
 *.opus
+*.webm
 
 # Test binary, built with `go test -c`
 *.test
