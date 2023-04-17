@@ -21,11 +21,19 @@ func main() {
 		log.Fatal("Failed to send message to server:", err)
 	}
 
-	// Read response from server
-	_, response, err := conn.ReadMessage()
-	if err != nil {
-		log.Fatal("Failed to read response from server:", err)
-	}
-	fmt.Println("Received response from server:", string(response))
+	// Start a separate goroutine to continuously read messages from the server
+	go func() {
+		for {
+			_, response, err := conn.ReadMessage()
+			if err != nil {
+				log.Fatal("Failed to read response from server:", err)
+			}
+			fmt.Println("Received response from server:", string(response))
+		}
+	}()
+
+	// Wait for user input to exit
+	fmt.Println("Press enter to exit...")
+	fmt.Scanln()
 }
 
