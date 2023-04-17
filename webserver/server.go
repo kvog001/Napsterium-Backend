@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
+	//"time"
 	"net/http"
 	"crypto/tls"
 	"Napsterium-Backend/handler"
@@ -15,10 +15,10 @@ func main() {
 	dbservice.ConnectToDB()
 
 	// Start the download after 5 seconds	
-	go func() {
+	/*go func() {
 		time.Sleep(5 * time.Second)
 		dlservice.DownloadSong("https://www.youtube.com/watch?v=03qttyOlvQE")
-	}()
+	}()*/
 
 	http.HandleFunc("/ws", dlservice.WebsocketHandler)
 	//go log.Fatal(http.ListenAndServe(":8080", nil))
