@@ -1,12 +1,15 @@
 package dlservice
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
 )
+
+var conn *websocket.Conn          // WebSocket connection
+var urlChannel = make(chan string) // // Channel to receive youtube URLs from external source
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -16,11 +19,14 @@ var upgrader = websocket.Upgrader{
 
 func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade HTTP connection to WebSocket
-	conn, err := upgrader.Upgrade(w, r, nil)
+	var err error
+	conn, err = upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal("Failed to upgrade to WebSocket:", err)
 	}
 	defer conn.Close()
+
+	go handleOutgoingMessages() // Start a new goroutine to handle outgoing messages
 
 	// Read messages from client
 	for {
@@ -30,13 +36,21 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		log.Println("Received message:", string(message))
+	}
+}
 
-		// Send response back to client
-		response := fmt.Sprintf("Received: %s", string(message))
-		err = conn.WriteMessage(websocket.TextMessage, []byte(response))
+func DownloadSong(youtubeURL string) {
+	urlChannel <- youtubeURL
+}
+
+func handleOutgoingMessages() {
+	for {
+		url := <-urlChannel
+		log.Println("Received youtube url from external source:", url)
+		// Send the youtube url as a WebSocket message
+		err := conn.WriteMessage(websocket.TextMessage, []byte(url))
 		if err != nil {
-			log.Println("Failed to send response:", err)
-			break
+			log.Println("Failed to send file title over WebSocket:", err)
 		}
 	}
 }
