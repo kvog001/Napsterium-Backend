@@ -1,13 +1,46 @@
 package dlservice
 
 import (
-	"log"
 	"fmt"
-	"sync"
+	"log"
 	"net/http"
+
 	"github.com/gorilla/websocket"
 )
 
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true // Allow any origin to connect
+	},
+}
+
+func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
+	// Upgrade HTTP connection to WebSocket
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Fatal("Failed to upgrade to WebSocket:", err)
+	}
+	defer conn.Close()
+
+	// Read messages from client
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Failed to read message:", err)
+			break
+		}
+		log.Println("Received message:", string(message))
+
+		// Send response back to client
+		response := fmt.Sprintf("Received: %s", string(message))
+		err = conn.WriteMessage(websocket.TextMessage, []byte(response))
+		if err != nil {
+			log.Println("Failed to send response:", err)
+			break
+		}
+	}
+}
+/*
 var conn *websocket.Conn
 var isWebSocketConnSetup bool
 var urlChannel = make(chan string)
@@ -40,9 +73,9 @@ func handleIncomingTitles() {
 func SetupWebsocketConn() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		// Upgrade the HTTP connection to a WebSocket connection
-        	connMutex.Lock()
+        	//connMutex.Lock()
         	conn, err := websocket.Upgrade(w, r, nil, 1024, 1024)
-        	connMutex.Unlock()
+        	//connMutex.Unlock()
 		
 		log.Println("upgrading connection to websocket")
 		
@@ -69,6 +102,7 @@ func SetupWebsocketConn() {
 	// Start the separate goroutine to handle incoming titles
 	go handleIncomingTitles()
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Listening to 8080")
+	log.Fatal(http.ListenAndServe("193.233.202.119:8080", nil))
 }
-
+*/
