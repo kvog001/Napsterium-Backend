@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"fmt"
-  	"github.com/gorilla/websocket"
+	"io/ioutil"
+  "github.com/gorilla/websocket"
+	"Napsterium-Backend/downloader"
 )
 
 func main() {
@@ -14,26 +16,30 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Send message to server
-	message := "Hello, server!"
-	err = conn.WriteMessage(websocket.TextMessage, []byte(message))
-	if err != nil {
-		log.Fatal("Failed to send message to server:", err)
-	}
-
-	// Start a separate goroutine to continuously read messages from the server
-	go func() {
-		for {
-			_, response, err := conn.ReadMessage()
-			if err != nil {
-				log.Fatal("Failed to read response from server:", err)
-			}
-			fmt.Println("Received response from server:", string(response))
+	// Continuously read messages from the server
+	for {
+		_, request, err := conn.ReadMessage()
+		if err != nil {
+			log.Fatal("Failed to read request from server:", err)
 		}
-	}()
 
-	// Wait for user input to exit
-	fmt.Println("Press enter to exit...")
-	fmt.Scanln()
+		youtubeURL := string(request)
+		fmt.Println("Received request from server:", youtubeURL)
+		
+		songID := downloader.ExtractSongID(youtubeURL)
+		downloader.DownloadSongToDisk(youtubeURL)
+
+		data, err := ioutil.ReadFile(downloader.SongsPath + "/" + songID + "." + downloader.DownloadFormat)
+		if err != nil {
+			log.Println("Error reading/loading song file from disk.")
+			return
+		}
+
+		// Send response to server
+		err = conn.WriteMessage(websocket.TextMessage, []byte(data))
+		if err != nil {
+			log.Println("Failed to send response to server:", err)
+		}
+		// TODO: delete song after sending it
+	}
 }
-

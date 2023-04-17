@@ -13,6 +13,7 @@ require (
 require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/hajimehoshi/go-mp3 v0.3.4 // indirect
 	github.com/hraban/opus v0.0.0-20220302220929-eeacdbcb92d0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect

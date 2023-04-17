@@ -3,12 +3,14 @@ package dlservice
 import (
 	//"fmt"
 	"log"
+	"net/url"
 	"net/http"
 	"github.com/gorilla/websocket"
 )
 
 var conn *websocket.Conn            // WebSocket connection
 var urlChannel = make(chan string) // Channel to receive youtube URLs from external source
+var songChannel = make(chan []byte)
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -27,19 +29,24 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	go handleOutgoingMessages() // Start a new goroutine to handle outgoing messages
 
-	// Read messages from client
+	// Read song audio data from local
 	for {
-		_, message, err := conn.ReadMessage()
+		_, song, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("Failed to read message:", err)
 			break
 		}
-		log.Println("Received message:", string(message))
+		
+		songChannel <- song
+		//log.Println("Received message:", string(message))
 	}
 }
 
-func DownloadSong(youtubeURL string) {
+func DownloadSong(youtubeURL string) []byte {
 	urlChannel <- youtubeURL
+	songWebm := <-songChannel
+	songMP3 := convert_webm_to_mp3(songWebm)
+	return songMP3
 }
 
 func handleOutgoingMessages() {
@@ -54,3 +61,12 @@ func handleOutgoingMessages() {
 	}
 }
 
+func ExtractSongID(youtubeURL string) string {
+	u, err := url.Parse(youtubeURL)
+	if err != nil {
+		return ""
+	}
+
+	query := u.Query()
+	return query.Get("v")
+}

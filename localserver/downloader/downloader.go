@@ -10,8 +10,9 @@ import (
 )
 
 const SongsPath = "songs"
+const DownloadFormat = "webm"
 
-func DownloadSongToDisk(youtubeURL, audioFormat, audioQuality string) {
+func DownloadSongToDisk(youtubeURL string) {
 	// Create the songs directory if it doesn't already exist
 	err := os.Mkdir(SongsPath, 0755)
 	if err != nil && !os.IsExist(err) {
@@ -20,17 +21,17 @@ func DownloadSongToDisk(youtubeURL, audioFormat, audioQuality string) {
 	}
 
 	songID := ExtractSongID(youtubeURL)
-	executeYTDLP(songID, youtubeURL, audioFormat, audioQuality)
+	executeYTDLP(songID, youtubeURL)
 	logFileSize(songID)
 }
 
-func executeYTDLP(songID, youtubeURL, audioFormat, audioQuality string) {
+func executeYTDLP(songID, youtubeURL string) {
 	// Download the song file using yt-dlp
 	cmd := exec.Command(
 		"yt-dlp", 
 		"--extract-audio", 
-		"--audio-format", audioFormat, 
-		"--audio-quality", audioQuality, 
+		"--audio-format", DownloadFormat, 
+		"--audio-quality", "9", 
 		"-o", SongsPath + "/" + songID + ".%(ext)s", youtubeURL)
 	
 	var stdout, stderr bytes.Buffer
@@ -60,7 +61,7 @@ func ExtractSongID(youtubeURL string) string {
 
 func logFileSize(songID string) {
 	// Get the file info for the downloaded file
-	filePath := SongsPath + "/" + songID + ".mp3"
+	filePath := SongsPath + "/" + songID + "." + DownloadFormat
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Printf("Error getting file info: %s", err)
