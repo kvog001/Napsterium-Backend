@@ -31,7 +31,7 @@ func executeYTDLP(songID, youtubeURL string) {
 		"yt-dlp", 
 		"--extract-audio", 
 		"--audio-format", DownloadFormat, 
-		"--audio-quality", "9", 
+		"--audio-quality", "1", 
 		"-o", SongsPath + "/" + songID + ".%(ext)s", youtubeURL)
 	
 	var stdout, stderr bytes.Buffer
